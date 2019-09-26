@@ -5,7 +5,7 @@ import java.util.ArrayList;
 
 import com.opencsv.CSVReader;
 
-import model.data_structures.MaxCP;
+import model.data_structures.MaxPQ;
 import model.data_structures.PrioridadQueue;
 
 
@@ -19,7 +19,7 @@ public class MVCModelo {
 	 * Atributos del modelo del mundo
 	 */
 	private PrioridadQueue<TravelTime> datosCola;
-	private MaxCP<TravelTime> datosHeap;
+	private MaxPQ<TravelTime> datosHeap;
 	
 	private int tamano;
 	private TravelTime viaje;
@@ -30,84 +30,35 @@ public class MVCModelo {
 	public MVCModelo()
 	{
 		datosCola = new PrioridadQueue<TravelTime>();
-		datosHeap=new MaxCP<>();		
+		datosHeap=new MaxPQ<>();		
 	}
-	/**
-	 * Servicio de consulta de numero de elementos presentes en el modelo 
-	 * @return numero de elementos presentes en el modelo
-	 */
-	public int darTamano(int lista)
-	{
-		return datosCola.get(lista).size();
-	}
-	public void crearLista(int lista) throws Exception
+	
+	public void crearLista() throws Exception
 	{
 		CSVReader reader=null;
-		reader = new CSVReader(new FileReader(".bogota-cadastral-2018-1-All-HourlyAggregate.csv"));
+		reader = new CSVReader(new FileReader("/data/bogota-cadastral-2018-1-All-HourlyAggregate.csv"));
 		String [] nextLine=reader.readNext();
 		while ((nextLine = reader.readNext()) != null) {
 			// nextLine[] is an array of values from the line
 
-			datosCola.get(lista).enqueue(new Viaje(nextLine[0],nextLine[1],nextLine[2],nextLine[3],nextLine[4],nextLine[5], nextLine[6]));
-			datosPila.get(lista).push(new Viaje(nextLine[0],nextLine[1],nextLine[2],nextLine[3],nextLine[4],nextLine[5], nextLine[6]));
+			datosCola.enqueue(new TravelTime(1, nextLine[0],nextLine[1],nextLine[2],nextLine[3],nextLine[4],nextLine[5], nextLine[6]));
+			datosHeap.insert(new TravelTime(1, nextLine[0],nextLine[1],nextLine[2],nextLine[3],nextLine[4],nextLine[5], nextLine[6]));
+
+		}
+		reader = new CSVReader(new FileReader("./data/bogota-cadastral-2018-2-All-HourlyAggregate.csv"));
+		nextLine=reader.readNext();
+		while ((nextLine = reader.readNext()) != null) {
+			// nextLine[] is an array of values from the line
+
+			datosCola.enqueue(new TravelTime(2, nextLine[0],nextLine[1],nextLine[2],nextLine[3],nextLine[4],nextLine[5], nextLine[6]));
+			datosHeap.insert(new TravelTime(2, nextLine[0],nextLine[1],nextLine[2],nextLine[3],nextLine[4],nextLine[5], nextLine[6]));
 
 		}
 		reader.close();
 	}
 
 	
-	public Queue<Viaje> grupoGrandeHora(int hora) {
-		// TODO Auto-generated method stub
-		ArrayList<Queue<Viaje>> aux2=new ArrayList<Queue<Viaje>>();
-		Queue<Viaje> aux=new Queue<Viaje>();
-		double mayor=hora;
-		for (int i=0;i<=1;i++){
-		while(datosCola.get(i).size()!=0){
-
-			Viaje a=datosCola.get(0).dequeue();
-			if(a.getHod()>=mayor){
-				aux.enqueue(a);
-				mayor=a.getHod();
-			}
-			else{
-				aux2.add(aux);
-				mayor=hora;
-				aux=null;
-			}
-		}
-		}
-		int tam=0;
-		Queue <Viaje>c=null;
-		for(int i=0;i<aux2.size();i++)
-		{
-			if(tam<aux2.get(i).size())
-			{
-				tam=aux2.get(i).size();
-				c=aux2.get(i);
-			}
-		}
-		return c;
-	}
-	public Queue<Viaje> nViajesHora(int h, int n) {
-		// TODO Auto-generated method stub
-		Queue<Viaje> aux=new Queue<Viaje>();
-		for(int i=0;i<=1;i++){
-		while(datosPila.get(0).size()!=0){
-			Viaje a=datosPila.get(0).pop();
-			if(a.getHod()==h){
-				aux.enqueue(a);
-			}
-		}	
-		}
-		int contador=aux.size()-n;
-		while(contador!=0){
-			aux.dequeue();
-			contador--;
-		}
-		
-		return aux;  
-		// esto
-	}
+	
 	public ArrayList<TravelTime> generarMuestra(int n) {
 		// TODO Auto-generated method stub
 		PrioridadQueue a=datosCola;
@@ -123,6 +74,30 @@ public class MVCModelo {
 		}
 		
 		return uribe;
+	}
+
+	public double nTiemposMasRapidosCola(int n, int zonai, int zonao) {
+		ArrayList<TravelTime> viajes=new ArrayList<>();
+		long startTime= System.currentTimeMillis();
+		for(int i=0; i<datosCola.size()&&i<n;i++)
+		{
+			viajes.add(datosCola.dequeueMax());
+		}
+		long endTime= System.currentTimeMillis();
+		return endTime-startTime;
+		// TODO Auto-generated method stub
+		
+	}
+
+	public double nTiemposMasRapidosHeap(int n, int zonai, int zonao) {
+		ArrayList<TravelTime> viajes=new ArrayList<>();
+		long startTime= System.currentTimeMillis();
+		for(int i=0; i<datosHeap.size()&&i<n;i++)
+		{
+			viajes.add(datosHeap.delMax());
+		}
+		long endTime= System.currentTimeMillis();
+		return endTime-startTime;
 	}	
 	
 

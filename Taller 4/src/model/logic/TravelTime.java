@@ -11,9 +11,9 @@ public class TravelTime implements Comparable<TravelTime>
 	private double geometric_mean_travel_time;
 	private double geometric_standard_deviation_travel_time;
 	
-	public TravelTime(String trimestre, String _sourceid, String _dstid, String _hod, String _mean_travel_time, String _standard_deviation_travel_time, String _geometric_mean_travel_time, String _geometric_standard_deviation_travel_time)
+	public TravelTime(int trimestre, String _sourceid, String _dstid, String _hod, String _mean_travel_time, String _standard_deviation_travel_time, String _geometric_mean_travel_time, String _geometric_standard_deviation_travel_time)
 	{
-		setTrimnestre(Double.parseDouble(trimestre));
+		trimnestre=trimnestre;
 		setSourceid(Double.parseDouble(_sourceid));
 		setDstid(Double.parseDouble(_dstid));
 		setHod(Double.parseDouble(_hod));
